@@ -1,0 +1,7 @@
+{
+    id: '68c1364c1fd5feacb3e0fb57',
+    name: 'Nitish',
+    email: 'kumar91@gmail.com',
+    password: '$2b$10$hUx6TTMEyibDYdRkMqaiRObBHbpwZm5WrrJPkWo2GGUgKnM6VG.g2',
+    role: 'member'
+  }

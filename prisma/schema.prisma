@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String?
+  email     String   @unique
+  password  String?
+  role      String   @default("member")
+  bookings  Booking[]
+}
+
+model Book {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  author      String
+  isbn        String   @unique
+  totalBook   Int
+  available   Boolean  @default(true)
+  description String?
+  imageUrl    String?  // This field should exist
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  bookings    Booking[]
+}
+
+
+model Booking {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  bookId    String   @db.ObjectId
+  status    String
+  dueDate   DateTime?
+  createdAt DateTime @default(now())
+
+  user   User @relation(fields: [userId], references: [id])
+  book   Book @relation(fields: [bookId], references: [id])
+}
