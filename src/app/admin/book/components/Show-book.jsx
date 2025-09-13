@@ -1,11 +1,13 @@
 "use client"
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
 const ShowBook = ({ data }) => {
     const [availability, setAvailability] = useState("all")
     const [search, setSearch] = useState("");
+    const router = useRouter();
 
     const filteredBooks = data?.filter(book => {
         if (availability === "all") return true;
@@ -20,7 +22,7 @@ const ShowBook = ({ data }) => {
         return <p>No books found</p>
     }
 
-    const handleDelete = async () => {
+    const handleDelete = async (id) => {
         if (!confirm("Are you sure you want to delete this book?")) {
             return;
         }
@@ -30,7 +32,7 @@ const ShowBook = ({ data }) => {
             })
             if (response.ok) {
                 alert('Book deleted successfully');
-                // Optionally, refresh the book list or remove the deleted book from state
+                router.refresh();
             } else {
                 alert('Failed to delete the book');
             }
@@ -98,12 +100,15 @@ const ShowBook = ({ data }) => {
                                         <td className="px-4 py-3 text-sm text-gray-600">{book.isbn}</td>
                                         <td className="px-4 py-3 text-sm text-gray-600">{book.totalBook}</td>
                                         <td className="px-4 py-3 flex justify-center gap-4">
-                                            <button className="text-blue-500 hover:text-blue-700 cursor-pointer">
-                                                <i className="fas fa-edit"></i>
-                                                Edit
-                                            </button>
+                                            <Link href={`/admin/book/book-show/${book.id}`}>
+                                                <button className="text-blue-500 hover:text-blue-700 cursor-pointer">
+                                                    <i className="fas fa-edit"></i>
+                                                    Edit
+                                                </button>
+                                            </Link>
+
                                             <button
-                                                onClick={handleDelete}
+                                                onClick={() => handleDelete(book.id)}
                                                 className="text-red-500 hover:text-red-700 cursor-pointer">
                                                 <i className="fas fa-trash-alt"></i>
                                                 Delete

@@ -38,7 +38,7 @@ model Booking {
   status    String
   dueDate   DateTime?
   createdAt DateTime @default(now())
-
+  returnedAt DateTime?
   user   User @relation(fields: [userId], references: [id])
   book   Book @relation(fields: [bookId], references: [id])
 }

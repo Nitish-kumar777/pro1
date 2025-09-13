@@ -1,69 +1,88 @@
-import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import cloudinary from "@/lib/cloudinary";
 
-const prisma = new PrismaClient()
+
+const prisma = new PrismaClient();
 
 export async function GET(request, { params }) {
-    const { id } = params;
+  const { id } = params;
 
-    if (!id) {
-        return NextResponse.json({ message: 'Book ID is required.' }, { status: 400 });
+  if (!id) {
+    return NextResponse.json({ message: 'book ID is required.' }, { status: 400 });
+  }
+
+  try {
+    const book = await prisma.book.findUnique({
+      where: { id },
+    });
+
+    if (!book) {
+      return NextResponse.json({ message: 'book not found.' }, { status: 404 });
     }
 
-    try {
-        const book = await prisma.book.findUnique({
-            where: { id: Number(id) }
-        });
-
-        if (!book) {
-            return NextResponse.json({ message: 'Book not found.' }, { status: 404 });
-        }
-        return NextResponse.json(book, { status: 200 });
-    } catch (error) {
-        console.error('Error fetching book:', error);
-        return NextResponse.json({ message: 'Error fetching book.' }, { status: 500 });
-    }
+    return NextResponse.json(book);
+  } catch (error) {
+    console.error('Error fetching book:', error);
+    return NextResponse.json({ message: 'Internal server error.' }, { status: 500 });
+  }
 }
 
+
+
 export async function PUT(request, { params }) {
-    const { id } = params;
-    const { title, author, isbn, available , totalBook , description , imageUrl } = await request.json();
+  const { id } = params;
+  if (!id) {
+    return NextResponse.json({ message: "book ID is required." }, { status: 400 });
+  }
 
-    if (!id || !title || !author || !isbn || available === undefined || totalBook === undefined || description === undefined || imageUrl === undefined) {
-        return NextResponse.json({ message: 'All fields are required.' }, { status: 400 });
+  try {
+    const body = await request.json();
+    let imageUrl = body.imageUrl;
+
+    // If imageUrl is base64, upload to Cloudinary
+    if (imageUrl && imageUrl.startsWith("data:image")) {
+      const uploadRes = await cloudinary.uploader.upload(imageUrl, {
+        folder: "library_books",
+      });
+      imageUrl = uploadRes.secure_url;
     }
 
-    try {
-        const book = await prisma.book.update({
-            where: { id: Number(id) },
-            data: { title, author, isbn, available, totalBook, description, imageUrl }
-        });
-        return NextResponse.json(book, { status: 200 });
-    } catch (error) {
-        console.error('Error updating book:', error);
-        return NextResponse.json({ message: 'Error updating book.' }, { status: 500 });
-    }
+    const updatedBook = await prisma.book.update({
+      where: { id },
+      data: {
+        title: body.title,
+        author: body.author,
+        isbn: body.isbn,
+        description: body.description,
+        imageUrl,
+        totalBook: Number(body.totalBook),
+        available: body.available,
+      },
+    });
+
+    return NextResponse.json(updatedBook);
+  } catch (error) {
+    console.error("Error updating book:", error);
+    return NextResponse.json({ message: "Internal server error." }, { status: 500 });
+  }
 }
 
 export async function DELETE(request, { params }) {
-    const { id } = params;
-    if (!id) {
-        return NextResponse.json({ message: 'Book ID is required.' }, { status: 400 });
-    }
+  const { id } = params;
 
-    try {
-        const book = await prisma.book.findUnique({
-            where: { id: Number(id) }
-        });
-        if (!book) {
-            return NextResponse.json({ message: 'Book not found.' }, { status: 404 });
-        }
+  if (!id) {
+    return NextResponse.json({ message: 'book ID is required.' }, { status: 400 });
+  }
 
-        await prisma.book.delete({
-            where: { id: Number(id) }
-        });
-        return NextResponse.json({ message: 'Book deleted successfully.' }, { status: 200 });
-    } catch (error) {
-        return NextResponse.json({ message: 'Error deleting book.' }, { status: 500 });
-    }
+  try {
+    await prisma.book.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: 'book deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting book:', error);
+    return NextResponse.json({ message: 'Internal server error.' }, { status: 500 });
+  }
 }

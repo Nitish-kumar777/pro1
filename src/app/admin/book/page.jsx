@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 export default function BookUploadForm() {
@@ -10,6 +11,7 @@ export default function BookUploadForm() {
   const [description, setDescription] = useState("")
   const [image, setImage] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -47,6 +49,7 @@ export default function BookUploadForm() {
     } finally {
       setIsLoading(false)
     }
+    router.push("/admin/book/book-show");
   }
 
   return (
