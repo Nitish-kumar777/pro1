@@ -20,39 +20,76 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        try {
-          const user = await prisma.user.findUnique({
-            where: { email: credentials.email },
-          })
-          if (user && user.password && await bcrypt.compare(credentials.password, user.password)) {
-            return user
-          }
-          return null
-        } catch (error) {
-          console.error("Authorize error:", error)
-          return null
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Missing email or password");
         }
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+        if (!user) throw new Error("No user found");
+
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+        if (!isValid) throw new Error("Invalid password");
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          role: user.role,
+        };
       },
     }),
   ],
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      // On first login
       if (user) {
-        token.role = user.role
+        token.id = user.id;
+        token.role = user.role;
       }
-      return token
+
+      // When session.update() is called
+      if (trigger === "update" && session) {
+        token.name = session.name;
+        token.email = session.email;
+        token.image = session.image;
+      }
+
+      // Always refresh from DB for latest values
+      const dbUser = await prisma.user.findUnique({
+        where: { id: token.id },
+        select: { id: true, name: true, email: true, image: true, role: true },
+      });
+
+      if (dbUser) {
+        token.name = dbUser.name;
+        token.email = dbUser.email;
+        token.image = dbUser.image;
+        token.role = dbUser.role;
+      }
+
+      return token;
     },
+
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.name = token.name;
+        session.user.email = token.email;
+        session.user.image = token.image;
       }
-      return session
+      return session;
     },
   },
-}
+  pages: { signIn: "/login" },
+};
 
-const handler = NextAuth(authOptions)
-export { handler as GET, handler as POST }
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

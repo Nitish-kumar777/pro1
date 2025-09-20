@@ -10,21 +10,23 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
-    "@prisma/client": "^6.15.0",
+    "@prisma/client": "^6.16.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
+    "lucide-react": "^0.544.0",
     "next": "15.5.2",
     "next-auth": "^4.24.11",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
-    "prisma": "^6.15.0",
+    "prisma": "^6.16.2",
     "tailwindcss": "^4"
   }
 }

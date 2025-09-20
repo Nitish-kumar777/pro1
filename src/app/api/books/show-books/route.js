@@ -17,6 +17,7 @@ export async function GET() {
             available: book.available,
             description: book.description,
             imageUrl: book.imageUrl,
+            category: book.categoryId,
             createdAt: book.createdAt,
             updatedAt: book.updatedAt,
             bookings: book.bookings,

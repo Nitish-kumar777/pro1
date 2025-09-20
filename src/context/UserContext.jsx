@@ -1,25 +1,32 @@
-"use client"
-import { createContext, useContext, useEffect, useState } from "react"
+"use client";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
-const UserContext = createContext(null)
+const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
-  const [user, setUser] = useState(null)
+  const { data: session, status } = useSession();
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
+    if (status === "authenticated" && session?.user) {
+      setUser({
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
+      });
+    } else if (status === "unauthenticated") {
+      setUser(null);
     }
-  }, [])
+  }, [status, session]);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
       {children}
     </UserContext.Provider>
-  )
+  );
 }
 
 export function useUser() {
-  return useContext(UserContext)
+  return useContext(UserContext);
 }

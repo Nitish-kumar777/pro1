@@ -10,6 +10,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-home: #ffffff;
+  --color-home-text: #9a999f;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,4 +33,8 @@ body {
 
 .action-btn:hover {
   transform: translateY(-2px);
+}
+
+button{
+  cursor: pointer;
 }

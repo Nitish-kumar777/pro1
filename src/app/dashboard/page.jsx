@@ -11,22 +11,27 @@ export default function Dashboard() {
   const { setUser } = useUser()
 
   useEffect(() => {
-    if (session) {
+    if (status === "authenticated" && session?.user) {
+
       localStorage.setItem("user", JSON.stringify(session.user))
       setUser(session.user)
+
+
+      if (session.user.role === "admin") {
+        router.replace("/admin")
+      }
     }
-    if (session?.user?.role === "admin") {
-      router.push("/admin")
-    }
-  }, [session, router, setUser])
+  }, [status, session, setUser, router])
+
 
   if (status === "loading") {
     return <p className="p-6">Loading...</p>
   }
-
-  if (!session) {
-    return <p className="p-6">Please login</p>
+  if (status === "unauthenticated") {
+    router.replace("/login") 
+    return null
   }
+
 
   return (
     <div className="p-6">

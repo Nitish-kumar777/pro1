@@ -12,6 +12,7 @@ export async function POST(req) {
     const isbn = formData.get("isbn")
     const totalBook = parseInt(formData.get("totalBook")) || 1
     const description = formData.get("description")
+    const categoryId = formData.get("categoryId") // ✅ get categoryId
     const file = formData.get("image")
 
     let imageUrl = null
@@ -53,6 +54,7 @@ export async function POST(req) {
         totalBook,
         available: true,
         description: description || null,
+        categoryId: categoryId || null, // ✅ associate category if provided
         imageUrl: imageUrl || null, // Store the image URL in the database
       },
     })

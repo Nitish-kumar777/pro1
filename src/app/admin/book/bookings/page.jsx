@@ -199,7 +199,7 @@ const AdminBookingsPage = () => {
               <div className="flex items-end">
                 <button
                   onClick={fetchBookings}
-                  className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+                  className="cursor-pointer w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
                 >
                   Refresh Data
                 </button>
@@ -345,21 +345,21 @@ const AdminBookingsPage = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                             <button
                               onClick={() => viewBookingDetails(booking.id)}
-                              className="text-indigo-600 hover:text-indigo-900"
+                              className="cursor-pointer text-indigo-600 hover:text-indigo-900"
                             >
                               Details
                             </button>
                             {!isReturned && (
                               <button
                                 onClick={() => handleReturnBook(booking.id, booking.bookId)}
-                                className="text-green-600 hover:text-green-900"
+                                className="cursor-pointer text-green-600 hover:text-green-900"
                               >
                                 Mark Returned
                               </button>
                             )}
                             <button
                               onClick={() => handleDeleteBooking(booking.id)}
-                              className="text-red-600 hover:text-red-900"
+                              className="text-red-600 hover:text-red-900 cursor-pointer"
                             >
                               Delete
                             </button>

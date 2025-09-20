@@ -30,7 +30,6 @@ const page = () => {
     }
   return (
     <div>
-      <h1>Books Show and Update</h1>
       <ShowBook data={books} />
     </div>
   )

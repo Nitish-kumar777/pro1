@@ -56,6 +56,7 @@ export async function PUT(request, { params }) {
         isbn: body.isbn,
         description: body.description,
         imageUrl,
+        categoryId: body.categoryId,
         totalBook: Number(body.totalBook),
         available: body.available,
       },
@@ -68,7 +69,8 @@ export async function PUT(request, { params }) {
   }
 }
 
-export async function DELETE(request, { params }) {
+export async function DELETE(request, context) {
+  const { params } = await context; 
   const { id } = params;
 
   if (!id) {
