@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 📚 Library Online Booking System
 
-## Getting Started
+A full-stack **Library Management & Online Booking System** built with **Next.js 14, Prisma, and MongoDB**.  
+Students/Members can search, reserve, and manage books online. Librarians/Admins can manage books, categories, users, and bookings.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 👨‍🎓 For Members/Students
+- 🔐 Authentication (NextAuth.js with credentials)
+- 🔍 Search books by title, author, ISBN, or category etc
+- 📖 Reserve books (check availability in real time)
+- ❤️ Favorite books
+- 👤 User dashboard with bookings & favorites etc
+- ✏️ Update profile (name, email, profile picture via Cloudinary)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 👩‍💼 For Admin/Librarian
+- 📚 Add / Update / Delete books
+- 🏷️ Manage categories
+- ✅ Approve/Reject reservations
+- 📊 Track issued/returned books
+- 💰 Fine calculation for late returns 
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🛠️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Frontend**: [Next.js 14](https://nextjs.org/) + [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- **Backend**: Next.js API Routes
+- **Database**: MongoDB + [Prisma ORM](https://www.prisma.io/)
+- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
+- **File Uploads**: [Cloudinary](https://cloudinary.com/)
+- **Deployment**: [Vercel](https://vercel.com/)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📂 Database Schema (Prisma)
 
-## Deploy on Vercel
+```prisma
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String?
+  email     String   @unique
+  password  String?
+  role      String   @default("member")
+  imageUrl  String?
+  bookings  Booking[]
+  favorites Favorite[]
+}
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+model Book {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  author      String
+  isbn        String   @unique
+  totalBook   Int
+  available   Boolean  @default(true)
+  description String?
+  imageUrl    String?
+  categoryId  String?   @db.ObjectId
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+  bookings  Booking[]
+  favorites Favorite[]
+}
+
+model Category {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  slug      String   @unique
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  books     Book[]
+  favorites Favorite[]
+}
+
+model Booking {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  bookId       String   @db.ObjectId
+  status       String
+  dueDate      DateTime?
+  createdAt    DateTime @default(now())
+  returnedAt   DateTime?
+  fine         Int      @default(0)
+  daysRemaining Int     @default(30)
+
+  user   User @relation(fields: [userId], references: [id])
+  book   Book @relation(fields: [bookId], references: [id])
+}
+
+model Favorite {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  bookId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+
+  user   User @relation(fields: [userId], references: [id])
+  book   Book @relation(fields: [bookId], references: [id])
+}
