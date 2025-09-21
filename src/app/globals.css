@@ -2,7 +2,6 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
 }
 
 @theme inline {
@@ -12,13 +11,6 @@
   --font-mono: var(--font-geist-mono);
   --color-home: #ffffff;
   --color-home-text: #9a999f;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
