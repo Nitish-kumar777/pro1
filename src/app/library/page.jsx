@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Page = () => {
   const { data: session, status } = useSession();
@@ -41,7 +42,7 @@ const Page = () => {
     return Math.round(Math.abs((new Date(date1) - new Date(date2)) / oneDay));
   };
 
-    if (status !== "authenticated") {
+  if (status !== "authenticated") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
@@ -52,7 +53,7 @@ const Page = () => {
           </div>
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Authentication Required</h1>
           <p className="text-gray-600 mb-6">Please log in to view your favorite books</p>
-          <button 
+          <button
             onClick={() => router.push("/login")}
             className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-indigo-800 transition-all duration-200"
           >
@@ -89,15 +90,16 @@ const Page = () => {
                   No books rented yet
                 </h3>
                 <p className="text-gray-500 mb-6">Books you rent will appear here</p>
-                <button
-                  onClick={() => (window.location.href = "/books-feed")}
-                  className="inline-flex items-center px-5 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 transition-all"
-                >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                  </svg>
-                  Browse Books
-                </button>
+                <Link href="/books-feed">
+                  <button
+                    className="inline-flex items-center px-5 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 transition-all"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    Browse Books
+                  </button>
+                </Link>
               </div>
             ) : (
               <div className="space-y-6">
@@ -106,7 +108,7 @@ const Page = () => {
                   const isReturned = booking.status === "returned";
                   const isActive = booking.status === "active";
                   const rentalDays = calculateDaysBetween(booking.createdAt, new Date());
-                  
+
                   return (
                     <div key={booking.id} className="border border-gray-200 rounded-xl p-5 bg-white hover:shadow-md transition-shadow">
                       <div className="flex flex-col md:flex-row">
@@ -130,16 +132,15 @@ const Page = () => {
                                 by {booking.book?.author || "Unknown Author"}
                               </p>
                             </div>
-                            
+
                             <div className="mt-3 md:mt-0">
                               <span
-                                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                                  isReturned
+                                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${isReturned
                                     ? "bg-green-100 text-green-800"
                                     : isOverdue
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-blue-100 text-blue-800"
-                                }`}
+                                      ? "bg-red-100 text-red-800"
+                                      : "bg-blue-100 text-blue-800"
+                                  }`}
                               >
                                 {isReturned && (
                                   <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -207,7 +208,7 @@ const Page = () => {
                                 <h3 className="text-sm font-medium text-red-800">Overdue Notice</h3>
                               </div>
                               <p className="text-sm text-red-700 mt-2">
-                                This book is overdue by {Math.abs(booking.daysRemaining)} days. 
+                                This book is overdue by {Math.abs(booking.daysRemaining)} days.
                                 A fine of ₹{booking.fine} has been applied (₹20 per day).
                                 Please return the book as soon as possible to avoid additional charges.
                               </p>
@@ -252,7 +253,7 @@ const Page = () => {
               <div className="ml-3">
                 <h3 className="text-md font-medium text-gray-900">₹20 per day late fee</h3>
                 <p className="mt-2 text-sm text-gray-600">
-                  Books are due 30 days after rental. A fine of ₹20 per day will be applied for each day past the due date. 
+                  Books are due 30 days after rental. A fine of ₹20 per day will be applied for each day past the due date.
                   Please return books on time to avoid additional charges.
                 </p>
               </div>
